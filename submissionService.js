@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const moment = require('moment');
 
 const Network = require('./network');
 const formatter = require('./formatter');
@@ -37,21 +38,114 @@ function getAndUpdateLatestSubmissions(){
       })
   }
 
-  getSubmissions
+  return getSubmissions
     .then(submissions => {
       storage.set('submissions', submissions)
       return submissions;
     })
-    .then(submissions => {
-
-    });
 }
 
-function createSubmissionByDate(submission){
+function createSubmissionByDate(submissions){
+  submissions = submissions.filter(submission => {
+    return submission.status_display == 'Accepted'
+  });
 
+  submissions.forEach(submission => {
+    submission.date = formatter.convertRelativeTimeToTimestamp(submission.time);
+  });
+  const titles = {};
+  const submissionsByDate = {};
+  for(let i = submissions.length - 1; i >= 0; i--){
+    const submission = submissions[i];
+    if(titles[submission.title]){
+      continue;
+    }
+
+    titles[submission.title] = true;
+    if(!submissionsByDate[submission.date]){
+      submissionsByDate[submission.date] = [submission];
+    }
+    else{
+      submissionsByDate[submission.date].push(submission);
+    }
+  }
+
+  return submissionsByDate;
+}
+
+function getDatesCounts(days, submissionsByDate){
+  let dates = [];
+  for(let i = 0; i < days; i++){
+    const date = moment().subtract(i, 'day').format('YYYY-MM-DD');
+    dates.unshift(date);
+  }
+  return dates.map(date => {
+    const submissions = submissionsByDate[date];
+    let count = 0;
+    if(submissions){
+      count = submissions.length;
+    }
+    return {
+      date,
+      count
+    }
+  });
+}
+
+function renderDates(datesObj){
+  //find max first
+  let max = 0;
+  datesObj.forEach(date => {
+    max = Math.max(max, date.count);
+  });
+
+  let days = datesObj.length;
+  console.log("$".repeat(days * 3 + 1));
+
+  const counts = datesObj.map(o => o.count);
+  for(let j = max; j >= 0; j--){
+    let row = "|";
+    for(let i = 0; i < days; i++){
+      if(j == 0){
+        if(counts[i] < 10){
+          row += ' ';
+        }
+        row += counts[i];
+        if(i < days - 1){
+          row += ' ';
+        }
+
+        continue;
+      }
+      const count = datesObj[i].count;
+      if(count >= j){
+        row += "/\\";
+      }
+      else{
+        if(j == 1 && count  == 0){
+          row += "__";
+        }
+        else{
+          row += "  ";
+        }
+
+      }
+      if(i < days - 1) {
+        row += " ";
+      }
+    }
+    row += "|";
+    console.log(row);
+  }
+  console.log("#".repeat(days * 3 + 1));
+  console.log("Start Date:", datesObj[0].date);
+  console.log("End Date:  ", datesObj[datesObj.length - 1].date);
+  console.log("#".repeat(days * 3 + 1));
 }
 
 module.exports = {
   getAndUpdateLatestSubmissions,
-  createSubmissionByDate
+  createSubmissionByDate,
+  getDatesCounts,
+  renderDates
 };

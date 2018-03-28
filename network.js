@@ -35,7 +35,7 @@ class Network {
     const limit = 20;
     return this.getSubmissions(skip, limit, lastKey)
 			.then(res => {
-				console.log(`done with ${skip} to ${skip + limit}`);
+				// console.log(`done with ${skip} to ${skip + limit}`);
         const stopIndicator = shouldStop(res);
         if(stopIndicator.stop){
           return accum.concat(stopIndicator.result);
