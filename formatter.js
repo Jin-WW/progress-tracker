@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-function convertRelativeTimeToTimestamp(relativeTime){
+function convertRelativeTimeToTimestamp(relativeTime, format){
 	const date = moment();
 	relativeTime
 		.split(',')
@@ -14,7 +14,7 @@ function convertRelativeTimeToTimestamp(relativeTime){
 				throw err;
 			}
 		});
-	return date.format('YYYY-MM-DD');
+	return date.format(format);
 }
 
 module.exports = {

@@ -10,7 +10,7 @@ const LEETCODE_SESSION = storage.get('LEETCODE_SESSION');
 const credentials = {csrftoken, LEETCODE_SESSION};
 const network = new Network(credentials);
 
-function getAndUpdateLatestSubmissions(){
+function getLatestSubmissions(){
   const submissions = storage.get('submissions');
 
   let getSubmissions;
@@ -39,10 +39,17 @@ function getAndUpdateLatestSubmissions(){
   }
 
   return getSubmissions
-    .then(submissions => {
-      storage.set('submissions', submissions)
-      return submissions;
-    })
+}
+
+function setSubmissionsWithTimeStamp(submissions){
+  submissions.forEach(submission => {
+    if(!submission.date){
+      submission.date = formatter.convertRelativeTimeToTimestamp(submission.time, 'YYYY-MM-DD');
+      submission.timestamp = formatter.convertRelativeTimeToTimestamp(submission.time);
+    }
+  });
+  storage.set('submissions', submissions)
+  return submissions;
 }
 
 function createSubmissionByDate(submissions){
@@ -50,9 +57,6 @@ function createSubmissionByDate(submissions){
     return submission.status_display == 'Accepted'
   });
 
-  submissions.forEach(submission => {
-    submission.date = formatter.convertRelativeTimeToTimestamp(submission.time);
-  });
   const titles = {};
   const submissionsByDate = {};
   for(let i = submissions.length - 1; i >= 0; i--){
@@ -144,7 +148,8 @@ function renderDates(datesObj){
 }
 
 module.exports = {
-  getAndUpdateLatestSubmissions,
+  getLatestSubmissions,
+  setSubmissionsWithTimeStamp,
   createSubmissionByDate,
   getDatesCounts,
   renderDates
