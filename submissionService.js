@@ -80,17 +80,18 @@ function createSubmissionByDate(submissions){
 function getDatesCounts(days, submissionsByDate){
   let dates = [];
   for(let i = 0; i < days; i++){
-    const date = moment().subtract(i, 'day').format('YYYY-MM-DD');
+    const date = moment().subtract(i, 'day');
     dates.unshift(date);
   }
   return dates.map(date => {
-    const submissions = submissionsByDate[date];
+    const submissions = submissionsByDate[date.format('YYYY-MM-DD')];
     let count = 0;
     if(submissions){
       count = submissions.length;
     }
     return {
-      date,
+      date: date.format('YYYY-MM-DD'),
+      dayOfWeek: date.format('dddd'),
       count
     }
   });
@@ -107,20 +108,9 @@ function renderDates(datesObj){
   console.log("$".repeat(days * 3 + 1));
 
   const counts = datesObj.map(o => o.count);
-  for(let j = max; j >= 0; j--){
+  for(let j = max; j > 0; j--){
     let row = "║";
     for(let i = 0; i < days; i++){
-      if(j == 0){
-        if(counts[i] < 10){
-          row += ' ';
-        }
-        row += counts[i];
-        if(i < days - 1){
-          row += ' ';
-        }
-
-        continue;
-      }
       const count = datesObj[i].count;
       if(count >= j){
         row += "/\\";
@@ -141,6 +131,34 @@ function renderDates(datesObj){
     row += "║";
     console.log(row);
   }
+
+  // print number row
+  let numberRow = "║";
+  for(let i = 0; i < days; i++) {
+    if (counts[i] < 10) {
+      numberRow += ' ';
+    }
+    numberRow += counts[i];
+    if (i < days - 1) {
+      numberRow += ' ';
+    }
+  }
+  numberRow += "║";
+  console.log(numberRow);
+
+  // print day row
+  let dayRows = "║";
+  for(let i = 0; i < days; i++) {
+    dayRows += " ";
+    dayRows += datesObj[i].dayOfWeek[0];
+    if (i < days - 1) {
+      dayRows += ' ';
+    }
+  }
+  dayRows += "║";
+  console.log(dayRows);
+
+
   console.log("#".repeat(days * 3 + 1));
   console.log("Start Date:", datesObj[0].date);
   console.log("End Date:  ", datesObj[datesObj.length - 1].date);
