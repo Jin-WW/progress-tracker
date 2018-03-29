@@ -3,6 +3,16 @@ const location = config.STORAGE_LOCATION;
 const path = require('path');
 const fs = require('fs');
 
+try {
+  fs.statSync(location);
+}
+catch(e){
+  if(e.code == 'ENOENT'){
+    fs.mkdirSync(location);
+  }
+}
+
+
 function name(key){
   return path.join(__dirname, location, key);
 }
