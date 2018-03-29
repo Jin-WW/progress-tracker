@@ -49,9 +49,9 @@ function getLatestSubmissions(credentials){
         return { stop: false };
       }
     })
-      .then(newSubmissions => {
-        return newSubmissions.concat(submissions);
-      })
+    .then(newSubmissions => {
+      return newSubmissions.concat(submissions);
+    })
   }
 
   return getSubmissions
@@ -69,7 +69,7 @@ function promptNewTokens(){
   const schema = {properties: {}};
   config.TOKEN_NAMES.forEach(token => {
     schema.properties[token] = {
-      message: `Please paste [${token}] from LeetCode cookies:`,
+      message: `Please paste [${token}] from LeetCode cookies`,
       required: true
     }
   });
