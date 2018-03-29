@@ -1,4 +1,5 @@
 {
 	"STORAGE_LOCATION": "storage",
-	"SUBMISSION_URL": "https://leetcode.com/api/submissions"
+	"SUBMISSION_URL": "https://leetcode.com/api/submissions",
+	"TOKEN_NAMES": ["csrftoken", "LEETCODE_SESSION"]
 }

@@ -1,14 +1,17 @@
 const _ = require('lodash');
 const moment = require('moment');
+const prompt = require('prompt');
+const config = require('./config.json');
 
 const Network = require('./network');
 const formatter = require('./formatter');
 const storage = require('./storage');
 
-const csrftoken = storage.get('csrftoken');
-const LEETCODE_SESSION = storage.get('LEETCODE_SESSION');
-const credentials = {csrftoken, LEETCODE_SESSION};
-const network = new Network(credentials);
+const credentials = {};
+config.TOKEN_NAMES.forEach(token => {
+  credentials[token] = storage.get(token);
+});
+let network = new Network(credentials);
 
 function getLatestSubmissions(){
   const submissions = storage.get('submissions');
@@ -39,6 +42,40 @@ function getLatestSubmissions(){
   }
 
   return getSubmissions
+    .catch(err => {
+      if(err.response.status == '401'){
+          return promptNewTokens()
+            .then((credentials) => {
+              network = new Network(credentials);
+              Object.keys(credentials)
+                .forEach(token => {
+                  storage.set(token, credentials[token]);
+                });
+              return getLatestSubmissions();
+            })
+      }
+      throw err;
+    })
+}
+
+function promptNewTokens(){
+  console.log('Invalid LeetCode Tokens');
+  const schema = {properties: {}};
+  config.TOKEN_NAMES.forEach(token => {
+    schema.properties[token] = {
+      message: `Please paste [${token}] from LeetCode cookies:`,
+      required: true
+    }
+  });
+  return new Promise((resolve, reject) => {
+    prompt.get(schema, (err, credentials) => {
+      if(err){
+        return reject(err);
+      }
+      return resolve(credentials);
+    })
+  });
+
 }
 
 function setSubmissionsWithTimeStamp(submissions){

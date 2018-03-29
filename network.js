@@ -60,6 +60,6 @@ class Network {
   }
 }
 
-Network.REQUIRED_COOKIE_TOKENS = ['csrftoken', 'LEETCODE_SESSION'];
+Network.REQUIRED_COOKIE_TOKENS = config.TOKEN_NAMES;
 
 module.exports = Network;
