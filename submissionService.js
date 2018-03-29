@@ -108,7 +108,7 @@ function renderDates(datesObj){
 
   const counts = datesObj.map(o => o.count);
   for(let j = max; j >= 0; j--){
-    let row = "|";
+    let row = "║";
     for(let i = 0; i < days; i++){
       if(j == 0){
         if(counts[i] < 10){
@@ -138,7 +138,7 @@ function renderDates(datesObj){
         row += " ";
       }
     }
-    row += "|";
+    row += "║";
     console.log(row);
   }
   console.log("#".repeat(days * 3 + 1));
