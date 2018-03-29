@@ -149,8 +149,7 @@ function renderDates(datesObj){
   // print day row
   let dayRows = "║";
   for(let i = 0; i < days; i++) {
-    dayRows += " ";
-    dayRows += datesObj[i].dayOfWeek[0];
+    dayRows += datesObj[i].dayOfWeek.slice(0,2);
     if (i < days - 1) {
       dayRows += ' ';
     }
