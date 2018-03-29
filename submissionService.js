@@ -104,6 +104,8 @@ function renderDates(datesObj){
     max = Math.max(max, date.count);
   });
 
+  max = Math.max(max, 10);
+
   let days = datesObj.length;
   console.log("$".repeat(days * 3 + 1));
 
