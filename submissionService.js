@@ -7,13 +7,26 @@ const Network = require('./network');
 const formatter = require('./formatter');
 const storage = require('./storage');
 
-const credentials = {};
-config.TOKEN_NAMES.forEach(token => {
-  credentials[token] = storage.get(token);
-});
-let network = new Network(credentials);
+let network;
 
-function getLatestSubmissions(){
+function checkTokensAndSetupNetwork(){
+  const credentials = {};
+  try {
+    config.TOKEN_NAMES.forEach(token => {
+      credentials[token] = storage.get(token);
+      if(!credentials[token]){
+        throw new Error('no token');
+      }
+    });
+    return Promise.resolve(credentials);
+  }
+  catch(e){
+    return promptNewTokens();
+  }
+}
+
+function getLatestSubmissions(credentials){
+  network = new Network(credentials);
   const submissions = storage.get('submissions');
 
   let getSubmissions;
@@ -45,14 +58,7 @@ function getLatestSubmissions(){
     .catch(err => {
       if(err.response.status == '401'){
           return promptNewTokens()
-            .then((credentials) => {
-              network = new Network(credentials);
-              Object.keys(credentials)
-                .forEach(token => {
-                  storage.set(token, credentials[token]);
-                });
-              return getLatestSubmissions();
-            })
+            .then(getLatestSubmissions);
       }
       throw err;
     })
@@ -72,6 +78,10 @@ function promptNewTokens(){
       if(err){
         return reject(err);
       }
+      Object.keys(credentials)
+        .forEach(token => {
+          storage.set(token, credentials[token]);
+        });
       return resolve(credentials);
     })
   });
@@ -204,6 +214,7 @@ function renderDates(datesObj){
 }
 
 module.exports = {
+  checkTokensAndSetupNetwork,
   getLatestSubmissions,
   setSubmissionsWithTimeStamp,
   createSubmissionByDate,
