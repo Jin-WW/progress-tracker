@@ -21,6 +21,7 @@ function checkTokensAndSetupNetwork(){
     return Promise.resolve(credentials);
   }
   catch(e){
+    console.log(e)
     return promptNewTokens();
   }
 }
@@ -56,6 +57,7 @@ function getLatestSubmissions(credentials){
 
   return getSubmissions
     .catch(err => {
+      console.log(err.message);
       if(err.response.status == '401'){
           return promptNewTokens()
             .then(getLatestSubmissions);
