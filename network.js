@@ -51,12 +51,22 @@ class Network {
 
   getSubmissions(offset=0, limit=20, lastKey=''){
     return axios.get(config.SUBMISSION_URL, {
-      headers : {
-        Cookie: this.cookie
-      },
-      params: {offset, limit, lastKey}
-    })
-      .then(res => res.data)
+				headers : {
+					'cookie': this.cookie,
+					'accept-language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7,zh-TW;q=0.6',
+					'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
+					'accept': '*/*',
+					'cache-control': 'no-cache',
+					'authority': 'leetcode.com',
+					'x-requested-with': 'XMLHttpRequest',
+					'referer': 'https://leetcode.com/submissions/',
+					'pragma': 'no-cache'
+				},
+				params: {offset, limit, lastKey}
+			})
+      .then(res => {
+      	return res.data
+      })
   }
 }
 
