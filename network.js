@@ -60,8 +60,9 @@ class Network {
 					'authority': 'leetcode.com',
 					'x-requested-with': 'XMLHttpRequest',
 					'referer': 'https://leetcode.com/submissions/',
-					'pragma': 'no-cache'
-				},
+					'pragma': 'no-cache',
+          'accept-encoding': 'gzip, deflate, br'
+        },
 				params: {offset, limit, lastKey}
 			})
       .then(res => {
